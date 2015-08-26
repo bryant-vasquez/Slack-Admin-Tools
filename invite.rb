@@ -14,6 +14,7 @@ require "uri"
 require 'pp'
 require 'json'
 require "net/http"
+require './error_handling'
 
 # hash to hold options given in the command line
 options = {:email => nil, :first_name => nil, :last_name => nil, :verbose => false, :api_key => nil}  
@@ -61,16 +62,6 @@ if options[:verbose]
     pp options
 end
 
-# This method is used for error checking
-def check_response(response, message, error_handling = :fatal_error, interactive_mode = false)
-    if !response["ok"]
-        STDERR.puts "Error: \"#{response["error"]}\" - " + message
-        if error_handling == :fatal_error 
-            exit 1
-        end
-    end    
-end
-
 # actually inviting the user
 method = "users.admin.invite?"
 slackHost = "https://slack.com/api/"
@@ -82,8 +73,6 @@ if options[:first_name] && options[:last_name]
         "email" => options[:email], "token" => options[:api_key], "first_name" => options[:first_name], 
         "last_name" => options[:last_name], "set_active" => true).body)
 else 
-    puts "No"
-    exit 1
     emailInviteResponse = JSON.parse(Net::HTTP.post_form(uri, 
         "email" => options[:email], "token" => options[:api_key], "set_active" => true).body)
 end

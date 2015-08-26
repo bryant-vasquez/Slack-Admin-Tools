@@ -1,4 +1,4 @@
-# The function that will be used for error handling
+# check_response will be used for error handling accross all scripts
 
 def check_response(response, message, error_handling = :fatal_error, interactive_mode = false)
     if !response["ok"]

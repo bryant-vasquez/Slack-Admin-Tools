@@ -16,6 +16,15 @@
 * Format
     * `ruby invite.rb --email <email_of_new_user> -k <admin_api_key>`
     * `ruby invite.rb --email <email_of_new_user> --first_name <firstname_of_new_user> --last_name <lastname_of_new_user> -k <admin_api_key>`
-* Example
+* Example (*the format of api-key is correct but the key is no longer valid*)
     * `ruby invite.rb --email someones_email@gmail.com -k xoxp-2895144450-5173338419-6395194080-2585ac`
+
+## Enabling a User
+* You can either give an email or a username that is associated with the account you would like to disable
+* Format
+    * `ruby enable.rb -e <email> -k <admin_api_key>`
+    * `ruby enable.rb -u <username> -k <admin_api_key>`
+* Example (*the format of api-key is correct but the key is no longer valid*)
+    * `ruby slack_acount_manager.rb -e someones_email@gmail.com -k xoxp-2895144450-5173338419-6395194080-2585ae`
+    * `ruby slack_acount_manager.rb -u someones_username -k xoxp-2895144450-5173338419-6395194080-2585ae`
 

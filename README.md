@@ -9,6 +9,10 @@
     * Example admin user task:  disable, enable, or invite other users
 * If your slack permissions change from a normal user to an admin user you will need to visit [api.slack.com/web](https://api.slack.com/web) and click `re-issue` at the bottom of the page  
 
+## Verbose mode 
+* With any command add the `-v` flag and you will get more get more information as the command is running
+* If there is an error it will always print to the terminal but if the command is succesful there will be no output unless in verbose mode
+
 ## Inviting a User 
 * This will send an email to the user asking them join your slack team
 * If the email used is already apart of your slack team an error will be thrown and no email will be sent
@@ -25,6 +29,16 @@
     * `ruby enable.rb -e <email> -k <admin_api_key>`
     * `ruby enable.rb -u <username> -k <admin_api_key>`
 * Example (*the format of api-key is correct but the key is no longer valid*)
-    * `ruby slack_acount_manager.rb -e someones_email@gmail.com -k xoxp-2895144450-5173338419-6395194080-2585ae`
-    * `ruby slack_acount_manager.rb -u someones_username -k xoxp-2895144450-5173338419-6395194080-2585ae`
+    * `ruby enable.rb -e someones_email@gmail.com -k xoxp-2895144450-5173338419-6395194080-2585ae -v`
+    * `ruby enable.rb -u someones_username -k xoxp-2895144450-5173338419-6395194080-2585ae -v`
 
+## Disabling a User
+* Slack does not allow admin to permanently delete user information, it will mearly dissable the user.
+* Format
+    * `ruby diable.rb -e <email> -k <admin_api_key>`
+    * `ruby diable.rb -u <username> -k <admin_api_key>`
+* Example (*the format of api-key is correct but the key is no longer valid*)
+    * `ruby disable.rb -e someonesemail@gmail.com -k xoxp-2895144450-5173338419-6395194080-2585ae -v`
+    * `ruby disable.rb -u someones_username -k xoxp-2895144450-5173338419-6395194080-2585ae -v`
+
+    * Because Slack does not allow admin members to permanently delete user information problems can occure with username or email conflicts. For example if John Smith takes the user name of jsmith but then decides to leave the group the user name jsmith will not be available for Jessica Smith who later joins the group looking for the namen jsmith. This issue can be solved if an admin goes to the user name jsmith and renames it old_jsmith or something of that nature to free up jsmith 

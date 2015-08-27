@@ -1,9 +1,9 @@
-# this script is used to enable users who have been disabled
+# this script is used to disable users who have been disabled
 # Usage
-# > ruby enable.rb -f Riley -l Shenk -e some_email@gmail.com 
+# > ruby disable.rb -f Riley -l Shenk -e some_email@gmail.com 
 #   -k xoxp-2895144450-5173338419-9130635876-22e3e2 -v
 # Or 
-# > ruby enable.rb --first_name Riley --last_name Shenk --email some_email@gmail.com 
+# > ruby disable.rb --first_name Riley --last_name Shenk --email some_email@gmail.com 
 #   --api_key xoxp-2895144450-5173338419-9130635876-22e3e2 --verbose
 # Command line arguments can be given in any order
 
@@ -19,14 +19,14 @@ require './error_handling'
 targetUser = {:email => nil, :username => nil, :verbose => false, :api_key => nil}  
 
 parser = OptionParser.new do|opts|
-    opts.banner = "Usage: enable.rb [targetUser]"   
+    opts.banner = "Usage: disable.rb [targetUser]"   
 
     opts.on('-e', '--email email', 'email address attached to 
-                                    the account you are enabling') do |email|
+                                    the account you are disabling') do |email|
         targetUser[:email] = email;
     end
 
-    opts.on('-u', '--username username', 'username you are enabling') do |username|
+    opts.on('-u', '--username username', 'username you are disabling') do |username|
         targetUser[:username] = username;
     end
 
@@ -68,56 +68,50 @@ def getUserID(targetUser, api_key)
     email = targetUser[:email]
     allUsers = getAllSlackUsers(api_key)
     if allUsers["ok"]                           
-        allUsers["members"].each{|hash| 
+        allUsers["members"].each{ |hash|
             if (hash["name"] == username && username != nil) || 
-               (hash["profile"]["email"] == email && email != nil)
+                (hash["profile"]["email"] == email && email != nil)
                 return hash["id"] 
             end
         }
     else
         STDERR.puts "Error: #{allUsers["error"]} - encountered when searching 
-        for user associated with #{targetUser[:email]}"
+        for user associated with " + 
+        (targetUser[:email] == nil ? targetUser[:username] : targetUser[:email]).to_s
     end
-    if targetUser[:userID]
-        puts "found #{targetUser[:userID]} #{targetUser[:username]}"
-    else 
-        STDERR.puts "Error: could not find user associated with #{targetUser[:email]}"
-        exit 1
-    end
+    STDERR.puts "Error: could not find user associated with " + 
+        (targetUser[:email] == nil ? targetUser[:username] : targetUser[:email]).to_s  
+    exit 1
 end
 
 # ---------------------------------- Main ----------------------------------
-
 if targetUser[:verbose]
     puts "arguments recieved from user:"
     pp targetUser
 end
 
-# To enable a user an email or username must be given
+# To disable a user an email or username must be given
 if (targetUser[:email] == nil && targetUser[:username] == nil) || 
     targetUser[:api_key] == nil
     puts "Error: manditory information was missing, make sure to give an 
           api_key with either an email or a username" 
-    puts "Try the -h flag for help on how to use enable.rb"
+    puts "Try the -h flag for help on how to use disable.rb"
     puts "quiting now"
     exit 1
 end
 
-# actually enabling the user
 #Finding the userID associated with the email given
 targetUser[:userID] = getUserID(targetUser, targetUser[:api_key])
 
-#Enabling the account       
-method = "users.admin.setRegular?"
+#Disabling the account       
+method = "users.admin.setInactive?"
 slackHost = "https://slack.com/api/"
 uri = URI(slackHost + method)
-enableResponse = JSON.parse(Net::HTTP.post_form(uri, "user" => targetUser[:userID], 
-    "token" => targetUser[:api_key], "set_active" => true, "_attempts" => 1).body)
-check_response(enableResponse, "encountered when trying to enable account", 
-               :fatal_error, targetUser[:verbose])
+disableResponse = JSON.parse(Net::HTTP.post_form(uri, 
+    "user" => targetUser[:userID], "token" => targetUser[:api_key], "set_active" => true, "_attempts" => 1).body)
+check_response(disableResponse,"encountered when trying to disable account", :fatal_error)
 if targetUser[:verbose] 
     print "Success: " 
     puts (targetUser[:username] ? targetUser[:username] : targetUser[:email]) + 
-         " was enabled"
+         " was disabled"
 end
-
